@@ -124,8 +124,10 @@ class myEvHandler (threading.Thread):
 				elif event.code == 315: #start
 					g_BUTTON_start = event.value
 				elif event.code == 310:  # LT
+					print("LT")
 					g_BUTTON_lt = event.value
 				elif event.code == 311:  # RT
+					print("RT")
 					g_BUTTON_rt = event.value
 
 class myOutputter (threading.Thread):
