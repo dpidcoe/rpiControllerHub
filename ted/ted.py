@@ -13,6 +13,9 @@ g_BUTTON_A = 0
 g_BUTTON_B = 0
 g_BUTTON_C = 0
 g_BUTTON_D = 0
+g_BUTTON_start = 0
+g_BUTTON_rt = 0
+g_BUTTON_lt = 0
 
 #for pi B+???
 LimitSwitch = 26        #Header pin 37 - Limit Switch
@@ -29,6 +32,18 @@ g_soundChannelC = 0
 g_sndA = 0
 g_sndB = 0
 g_sndC = 0
+
+g_devices = []
+#wait here until a logitech device is found
+#TODO: make this better. Maybe use exceptions or give more information to the user
+while len(g_devices) == 0:
+	for path in evdev.list_devices():
+		print('device: ', path)
+		print(evdev.InputDevice(path)) #note: this print statement has to be here or it crashes
+		device = evdev.InputDevice(path)
+		if 'F710' in device.name:
+			g_devices.append(device)
+	sleep(1)  # sleep 1 second?
 
 def setup():
 	global g_soundChannelA
@@ -79,7 +94,8 @@ class myEvHandler (threading.Thread):
 	def __init__(self, threadID):
 		threading.Thread.__init__(self)
 		self.threadID = threadID
-		self.device = evdev.InputDevice('/dev/input/event0')
+		#self.device = evdev.InputDevice('/dev/input/event0')
+		self.device = g_devices[0]
 		self._stop_event = threading.Event()
 		
 	def stop(self):
@@ -90,6 +106,9 @@ class myEvHandler (threading.Thread):
 		global g_BUTTON_B
 		global g_BUTTON_C
 		global g_BUTTON_D
+		global g_BUTTON_start
+		global g_BUTTON_rt
+		global g_BUTTON_lt
 		print ("monitoring evdev")
 		for event in self.device.read_loop():
 			if event.type == evdev.ecodes.EV_KEY:
@@ -103,7 +122,11 @@ class myEvHandler (threading.Thread):
 				elif event.code == 308: #Y
 					g_BUTTON_D = event.value
 				elif event.code == 315: #start
-					halt()
+					g_BUTTON_start = event.value
+				elif event.code == 310:  # LT
+					g_BUTTON_lt = event.value
+				elif event.code == 311:  # RT
+					g_BUTTON_rt = event.value
 
 class myOutputter (threading.Thread):
 	def __init__(self, threadID):
@@ -119,6 +142,9 @@ class myOutputter (threading.Thread):
 		global g_BUTTON_B
 		global g_BUTTON_C
 		global g_BUTTON_D
+		global g_BUTTON_start
+		global g_BUTTON_rt
+		global g_BUTTON_lt
 		global g_soundChannelA
 		global g_soundChannelB
 		global g_soundChannelC
@@ -186,11 +212,34 @@ class myOutputter (threading.Thread):
 					GPIO.output(g_Relay2, GPIO.HIGH)  # Head Down
 					while g_BUTTON_C == True:
 						sleep(0.01)  # wait for Button Debounce
+				#Strobe
+				if (g_BUTTON_D == True):
+					print("Turn on strobe")
+					GPIO.output(g_Relay4, GPIO.LOW)
+					#spin until done
+					while(g_BUTTON_D == True):
+						sleep(0.01) # wait for button debounce
+					print("Turn off strobe")
+					GPIO.output(g_Relay4, GPIO.HIGH)
+				#scream
+				if (g_BUTTON_lt == True):
+					print("scream sound")
+					g_soundChannelA.play(g_sndA)
+					while(g_BUTTON_lt == True):
+						sleep(0.01) #wait for button debounce
+					print("scream done, ready for next cycle")
+				#laugh
+				if (g_BUTTON_rt == True):
+					print("laugh sound")
+					g_soundChannelC.play(g_sndC)
+					while(g_BUTTON_rt == True):
+						sleep(0.01) #wait for button debounce
+					print("laugh done, ready for next cycle")
 				sleep(.01)
 			except KeyboardInterrupt:
 				halt()
 				exit()
-			sleep(0.1) #can do values like 0.1
+			sleep(0.05) #can do values like 0.1
 
 class flashLed (threading.Thread):
 	def __init__(self, threadID):
