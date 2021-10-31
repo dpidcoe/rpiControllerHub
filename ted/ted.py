@@ -33,6 +33,18 @@ g_sndA = 0
 g_sndB = 0
 g_sndC = 0
 
+g_devices = []
+#wait here until a logitech device is found
+#TODO: make this better. Maybe use exceptions or give more information to the user
+while len(g_devices) == 0:
+	for path in evdev.list_devices():
+		print('device: ', path)
+		print(evdev.InputDevice(path)) #note: this print statement has to be here or it crashes
+		device = evdev.InputDevice(path)
+		if 'F710' in device.name:
+			g_devices.append(device)
+	sleep(1)  # sleep 1 second?
+
 def setup():
 	global g_soundChannelA
 	global g_soundChannelB
@@ -82,7 +94,8 @@ class myEvHandler (threading.Thread):
 	def __init__(self, threadID):
 		threading.Thread.__init__(self)
 		self.threadID = threadID
-		self.device = evdev.InputDevice('/dev/input/event0')
+		#self.device = evdev.InputDevice('/dev/input/event0')
+		self.device = g_devices[0]
 		self._stop_event = threading.Event()
 		
 	def stop(self):
