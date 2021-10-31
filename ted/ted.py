@@ -212,13 +212,13 @@ class myOutputter (threading.Thread):
 				if (g_BUTTON_lt == True):
 					print("scream sound")
 					g_soundChannelA.play(g_sndA)
-					while(g_BUTTON_lt == true):
+					while(g_BUTTON_lt == True):
 						sleep(0.01) #wait for button debounce
 				#laugh
 				if (g_BUTTON_rt == True):
 					print("laugh sound")
 					g_soundChannelC.play(g_sndC)
-					while(g_BUTTON_rt == true):
+					while(g_BUTTON_rt == True):
 						sleep(0.01) #wait for button debounce
 				sleep(.01)
 			except KeyboardInterrupt:
