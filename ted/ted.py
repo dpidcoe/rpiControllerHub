@@ -124,10 +124,8 @@ class myEvHandler (threading.Thread):
 				elif event.code == 315: #start
 					g_BUTTON_start = event.value
 				elif event.code == 310:  # LT
-					print("LT")
 					g_BUTTON_lt = event.value
 				elif event.code == 311:  # RT
-					print("RT")
 					g_BUTTON_rt = event.value
 
 class myOutputter (threading.Thread):
@@ -241,7 +239,7 @@ class myOutputter (threading.Thread):
 			except KeyboardInterrupt:
 				halt()
 				exit()
-			sleep(0.1) #can do values like 0.1
+			sleep(0.05) #can do values like 0.1
 
 class flashLed (threading.Thread):
 	def __init__(self, threadID):
