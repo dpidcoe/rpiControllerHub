@@ -108,7 +108,7 @@ class myEvHandler (threading.Thread):
 		global g_BUTTON_D
 		global g_BUTTON_start
 		global g_BUTTON_rt
-		global g_BUTTON_rt
+		global g_BUTTON_lt
 		print ("monitoring evdev")
 		for event in self.device.read_loop():
 			if event.type == evdev.ecodes.EV_KEY:
@@ -146,7 +146,7 @@ class myOutputter (threading.Thread):
 		global g_BUTTON_D
 		global g_BUTTON_start
 		global g_BUTTON_rt
-		global g_BUTTON_rt
+		global g_BUTTON_lt
 		global g_soundChannelA
 		global g_soundChannelB
 		global g_soundChannelC
