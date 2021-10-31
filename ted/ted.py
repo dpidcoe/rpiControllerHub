@@ -15,7 +15,7 @@ g_BUTTON_C = 0
 g_BUTTON_D = 0
 g_BUTTON_start = 0
 g_BUTTON_rt = 0
-g_BUTTON_rt = 0
+g_BUTTON_lt = 0
 
 #for pi B+???
 LimitSwitch = 26        #Header pin 37 - Limit Switch
